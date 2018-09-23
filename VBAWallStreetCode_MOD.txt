@@ -1,0 +1,80 @@
+Sub totalvolume()
+'Loop through Worksheets
+    Dim ws As Worksheet
+    For Each ws In Worksheets
+    
+'Functions to complete on each worksheet
+    Dim row As Integer
+    Dim volume As Double
+    Dim lastrow As Double
+    Dim openvalue As Double
+    Dim closevalue As Double
+    Dim yearly_change As Double
+    Dim percent_change As Double
+    
+    volume = 0
+    row = 2
+    
+    'Title Columns
+    ws.Range("I1").Value = "Ticker"
+    ws.Range("J1").Value = "Yearly Change"
+    ws.Range("K1").Value = "Percent Change"
+    ws.Range("L1").Value = "Total Stock Volume"
+    
+    'Determine number of rows in worksheet
+    lastrow = ws.Cells(Rows.Count, 1).End(xlUp).row
+    MsgBox ("There are " & lastrow & " rows for worksheet " & ws.Name & ".")
+    
+    'Loop through rows and identify unique ticker values and stats
+    
+    For I = 2 To lastrow
+        
+        'Capture open value
+        openvalue = ws.Cells(2, 3).Value
+        
+        'Subtotaling volume
+        If ws.Cells(I + 1, 1).Value = ws.Cells(I, 1).Value Then
+            volume = volume + ws.Cells(I, 7).Value
+        
+        ' capture unique tickers with value and list in table
+        ElseIf ws.Cells(I + 1, 1).Value <> ws.Cells(I, 1).Value Then
+            ws.Cells(row, 9).Value = ws.Cells(I, 1).Value
+            volume = volume + ws.Cells(I, 7).Value
+            'print subtotal to table for ticker
+            ws.Cells(row, 12).Value = volume
+            
+            'capture close value, calc yearly change and print for ticker
+            closevalue = ws.Cells(I, 6).Value
+            yearly_change = (closevalue - openvalue)
+            ws.Cells(row, 10).Value = yearly_change
+            
+            'Calculate percent change from open
+            percent_change = yearly_change / openvalue
+            ws.Cells(row, 11).Value = FormatPercent(percent_change, 2)
+            'format negative loss as red
+            
+            'format positive percent gain as green, negative as red
+            
+            If ws.Cells(row, 11).Value >= 0 Then
+                ws.Cells(row, 11).Interior.ColorIndex = 4
+            ElseIf ws.Cells(row, 11).Value < 0 Then
+                ws.Cells(row, 11).Interior.ColorIndex = 3
+            End If
+            
+            'set open value for next ticker
+            openvalue = ws.Cells(I + 1, 3).Value
+            row = row + 1
+            'reset volume
+            volume = 0
+           
+        End If
+        
+    Next I
+    
+    ' Autofit to display data
+    ws.Columns("A:L").AutoFit
+    Next ws
+End Sub
+
+
+
