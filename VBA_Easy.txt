@@ -1,0 +1,44 @@
+Sub totalvolume()
+'Loop through Worksheets
+    Dim ws As Worksheet
+    For Each ws In Worksheets
+    
+'Functions to complete on each worksheet
+    Dim row As Integer
+    Dim volume As Double
+    Dim lastrow As Double
+    
+    volume = 0
+    row = 2
+    ws.Range("I1").Value = "Ticker"
+    ws.Range("J1").Value = "Total Stock Volume"
+    
+    'Determine number of rows in worksheet
+    lastrow = ws.Cells(Rows.Count, 1).End(xlUp).row
+    MsgBox ("There are " & lastrow & " rows for worksheet " & ws.Name & ".")
+    
+    'Loop through rows and identify unique ticker values
+    
+    For I = 2 To lastrow
+        
+        If ws.Cells(I + 1, 1).Value = ws.Cells(I, 1).Value Then
+            volume = volume + ws.Cells(I, 7).Value
+        
+        ' capture unique tickers with value and list in table
+        ElseIf ws.Cells(I + 1, 1).Value <> ws.Cells(I, 1).Value Then
+            ws.Cells(row, 9).Value = ws.Cells(I, 1).Value
+            volume = volume + ws.Cells(I, 7).Value
+            'print subtotal to table for ticker
+            ws.Cells(row, 10).Value = volume
+            row = row + 1
+            'reset volume
+            volume = 0
+            
+        End If
+        
+    Next I
+    ' Autofit to display data
+    ws.Columns("A:J").AutoFit
+    Next ws
+End Sub
+
